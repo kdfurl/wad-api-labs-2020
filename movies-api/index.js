@@ -5,9 +5,9 @@ import moviesRouter from "./api/movies";
 import usersRouter from "./api/users";
 import genresRouter from "./api/genres";
 import "./db";
-import { loadUsers } from "./seedData";
+import { loadUsers, loadMovies } from "./seedData";
 import session from "express-session";
-import passport from './authenticate';
+import passport from "./authenticate";
 
 dotenv.config();
 
@@ -22,6 +22,7 @@ const errHandler = (err, req, res, next) => {
 
 if (process.env.SEED_DB) {
   loadUsers();
+  loadMovies();
 }
 
 const app = express();
@@ -45,7 +46,11 @@ app.use(
   })
 );
 
-app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter);
+app.use(
+  "/api/movies",
+  passport.authenticate("jwt", { session: false }),
+  moviesRouter
+);
 
 // Users router
 app.use("/api/users", usersRouter);
