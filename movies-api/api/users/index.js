@@ -1,7 +1,7 @@
 import express from "express";
 import User from "./userModel";
 import jwt from "jsonwebtoken";
-import movieModel from '../movies/movieModel';
+import movieModel from "../movies/movieModel";
 
 const router = express.Router(); // eslint-disable-line
 
@@ -71,11 +71,23 @@ router.put("/:id", (req, res, next) => {
 router.post("/:userName/favourites", async (req, res, next) => {
   const newFavourite = req.body.id;
   const userName = req.params.userName;
-  const movie = await movieModel.findByMovieDBId(newFavourite);
-  const user = await User.findByUserName(userName);
-  await user.favourites.push(movie._id);
-  await user.save();
-  res.status(201).json(user);
+  const movie = await movieModel.findByMovieDBId(newFavourite).catch(next);
+  const user = await User.findByUserName(userName).catch(next);
+  if (!movie) {
+    return res.status(404).json({ code: 404, msg: "Movie not found." });
+  }
+  if (!user) {
+    return res.status(404).json({ code: 404, msg: "User not found." });
+  }
+  if (user.favourites.indexOf(movie._id) > -1) {
+    return res
+      .status(401)
+      .json({ code: 403, msg: "Movie already added to favourites." });
+  } else {
+    await user.favourites.push(movie._id);
+    await user.save();
+    res.status(201).json(user);
+  }
 });
 
 router.get("/:userName/favourites", (req, res, next) => {

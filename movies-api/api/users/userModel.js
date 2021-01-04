@@ -3,9 +3,20 @@ import bcrypt from "bcrypt-nodejs";
 
 const Schema = mongoose.Schema;
 
+const passwordValidator = (password) => {
+  let passwordRegEx = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/;
+  return passwordRegEx.test(password);
+};
+
 const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
+  password: {
+    type: String,
+    required: true,
+    validate: {
+      validator: passwordValidator
+    },
+  },
   favourites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movies" }],
 });
 
