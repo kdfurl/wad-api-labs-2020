@@ -7,7 +7,7 @@ import genresRouter from "./api/genres";
 import "./db";
 import { loadUsers } from "./seedData";
 import session from "express-session";
-import authenticate from "./authenticate";
+import passport from './authenticate';
 
 dotenv.config();
 
@@ -34,6 +34,8 @@ app.use(bodyParser.urlencoded());
 
 app.use(express.static("public"));
 
+app.use(passport.initialize());
+
 //session middleware
 app.use(
   session({
@@ -43,8 +45,7 @@ app.use(
   })
 );
 
-//update /api/Movie route
-app.use("/api/movies", authenticate, moviesRouter);
+app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter);
 
 // Users router
 app.use("/api/users", usersRouter);
