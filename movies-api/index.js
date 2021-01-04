@@ -2,7 +2,8 @@ import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import moviesRouter from "./api/movies";
-import usersRouter from './api/users';
+import usersRouter from "./api/users";
+import genresRouter from "./api/genres";
 import "./db";
 import { loadUsers } from "./seedData";
 
@@ -25,15 +26,18 @@ const app = express();
 
 const port = process.env.PORT;
 
-//configure body-parser
+// configure body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
 app.use(express.static("public"));
 app.use("/api/movies", moviesRouter);
 
-//Users router
-app.use('/api/users', usersRouter);
+// Users router
+app.use("/api/users", usersRouter);
+
+// Genres router
+app.use("/api/genres", genresRouter);
 
 app.use(errHandler);
 
